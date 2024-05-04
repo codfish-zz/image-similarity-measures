@@ -26,14 +26,22 @@ def read_image(path: str):
 
 def evaluation(org_img_path: str, pred_img_path: str, metrics: List[str]):
     output_dict = {}
+
     org_img = read_image(org_img_path)
+    org_height, org_width, _ = org_img.shape
+
     pred_img = read_image(pred_img_path)
+    pred_height, pred_width, _ = pred_img.shape
+
+    if org_height != pred_height or org_width != pred_width:
+        pred_img = cv2.resize(pred_img, (org_width, org_height))
 
     for metric in metrics:
         metric_func = metric_functions[metric]
         out_value = float(metric_func(org_img, pred_img))
         logger.info(f"{metric.upper()} value is: {out_value}")
         output_dict[metric] = out_value
+
     return output_dict
 
 
